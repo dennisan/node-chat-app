@@ -20,9 +20,12 @@ io.on('connection', (socket) => {
 	socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'));
 
 	socket.on('createMessage', (message, callback) => {
-		console.log(`createMessage`, message);
 		io.emit('newMessage', generateMessage(message.from, message.text));
-		callback('Server got your message');
+		callback();
+	});
+
+	socket.on('createLocationMessage', (position) => {
+		io.emit('newMessage', generateMessage('location received', `${position.latitude}, ${position.longitude}`));
 	});
 
 	socket.on('disconnect', () => {
