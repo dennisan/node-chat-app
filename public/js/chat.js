@@ -15,15 +15,33 @@ function scrollToBottom () {
 	if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
 		messages.scrollTop(scrollHeight);
 	}
-
 }
 
 socket.on('connect', function() {
-	console.log(`connected to server`);
+	var params = jQuery.deparam(window.location.search);
+
+	socket.emit('join', params, function (err) {
+		if (err) {
+			alert(err);
+			window.location.href = '/'
+		} else {
+			console.log(`NoError`);
+		}
+	})
 });
 
-socket.on('disconnect', function() {
+socket.on('disconnect', function(users) {
 	console.log(`disconnected from server`);
+});
+
+socket.on('updateUserList', function(users) {
+	var ol = jQuery('<ol></ol>');
+
+	users.forEach(function (user) {
+		ol.append(jQuery('<li></li>').text(user));
+	});
+
+	jQuery('#users').html(ol);
 });
 
 socket.on('newMessage', function(message) {
