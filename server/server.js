@@ -36,12 +36,26 @@ io.on('connection', (socket) => {
 		callback();
 	})
 
+	socket.on('changeData', (log, callback) => {
+		console.log(`dataChanged received`, log);
+
+		var user = users.getUser(socket.id);
+		if (user) {
+			io.to(user.room).emit('dataChanged', log);
+		}
+		if (callback) 
+			callback();
+	});
+
 	socket.on('createMessage', (message, callback) => {
+		console.log(`createMessage received`);
+
 		var user = users.getUser(socket.id);
 		if (user && isRealString(message.text)) {
 			io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
 		}
-		callback();
+		if (callback) 
+			callback();
 	});
 
 	socket.on('newLocationMessage', (coords) => {
